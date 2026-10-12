@@ -41,6 +41,29 @@ public class FabricPermissionRegistrationManager implements PermissionRegistrati
         registerPermission("grim.alerts.enable-on-join.silent", PermissionDefaultValue.FALSE);
         registerPermission("grim.verbose.enable-on-join.silent", PermissionDefaultValue.FALSE);
         registerPermission("grim.brand.enable-on-join.silent", PermissionDefaultValue.FALSE);
+        registerPermission("grim.help", PermissionDefaultValue.OP);
+        registerPermission("grim.performance", PermissionDefaultValue.OP);
+        registerPermission("grim.profile", PermissionDefaultValue.OP);
+        registerPermission("grim.brand", PermissionDefaultValue.OP);
+        registerPermission("grim.sendalert", PermissionDefaultValue.OP);
+        registerPermission("grim.verbose", PermissionDefaultValue.OP);
+        registerPermission("grim.list", PermissionDefaultValue.FALSE);
+        registerPermission("grim.reload", PermissionDefaultValue.OP);
+        registerPermission("grim.version", PermissionDefaultValue.OP);
+        registerPermission("grim.debug", PermissionDefaultValue.OP);
+        registerPermission("grim.consoledebug", PermissionDefaultValue.OP);
+        registerPermission("grim.spectate", PermissionDefaultValue.OP);
+        registerPermission("grim.spectate.stophere", PermissionDefaultValue.OP);
+        registerPermission("grim.history", PermissionDefaultValue.OP);
+        registerPermission("grim.history.copy", PermissionDefaultValue.OP);
+        registerPermission("grim.history.migrate", PermissionDefaultValue.OP);
+        registerPermission("grim.history.repair", PermissionDefaultValue.OP);
+        registerPermission("grim.log", PermissionDefaultValue.OP);
+        registerPermission("grim.dump", PermissionDefaultValue.OP);
+        registerPermission("grim.testwebhook", PermissionDefaultValue.OP);
+        registerPermission("grim.admin", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.tools", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.permissions", PermissionDefaultValue.OP);
     }
 
     @Override
