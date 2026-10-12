@@ -313,13 +313,33 @@ bukkit {
             default = Permission.Default.OP
         }
 
-        register("grim.admin.tools") {
-            description = "View Grim admin tool overview"
+        register("grim.admin.supervisor") {
+            description = "Access supervisor-level Grim admin statistics"
             default = Permission.Default.OP
         }
 
-        register("grim.admin.permissions") {
-            description = "View Grim admin permission status"
+        register("grim.admin.playerstats") {
+            description = "View detailed Grim runtime statistics for a player"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.player.refresh") {
+            description = "Refresh Grim runtime state for a player"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.alerts.manage") {
+            description = "Manage alert toggle state for other staff members"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.verbose.manage") {
+            description = "Manage verbose toggle state for other staff members"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.brands.manage") {
+            description = "Manage brands toggle state for other staff members"
             default = Permission.Default.OP
         }
 

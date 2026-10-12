@@ -62,8 +62,12 @@ public class FabricPermissionRegistrationManager implements PermissionRegistrati
         registerPermission("grim.dump", PermissionDefaultValue.OP);
         registerPermission("grim.testwebhook", PermissionDefaultValue.OP);
         registerPermission("grim.admin", PermissionDefaultValue.OP);
-        registerPermission("grim.admin.tools", PermissionDefaultValue.OP);
-        registerPermission("grim.admin.permissions", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.supervisor", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.playerstats", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.player.refresh", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.alerts.manage", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.verbose.manage", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.brands.manage", PermissionDefaultValue.OP);
     }
 
     @Override
