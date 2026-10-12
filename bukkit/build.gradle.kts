@@ -323,6 +323,11 @@ bukkit {
             default = Permission.Default.OP
         }
 
+        register("grim.admin.combatintel") {
+            description = "View advanced combat intelligence for a player"
+            default = Permission.Default.OP
+        }
+
         register("grim.admin.player.refresh") {
             description = "Refresh Grim runtime state for a player"
             default = Permission.Default.OP

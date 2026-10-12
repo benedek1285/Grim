@@ -21,7 +21,10 @@ import org.incendo.cloud.suggestion.SuggestionProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -44,6 +47,14 @@ public class GrimAdmin implements BuildableCommand {
                         .permission("grim.admin.playerstats")
                         .required("target", arguments.singlePlayerSelectorParser())
                         .handler(this::handlePlayerStats)
+        );
+        commandManager.command(
+                commandManager.commandBuilder("grim", "grimac")
+                        .literal("admin")
+                        .literal("combatintel")
+                        .permission("grim.admin.combatintel")
+                        .required("target", arguments.singlePlayerSelectorParser())
+                        .handler(this::handleCombatIntel)
         );
         commandManager.command(
                 commandManager.commandBuilder("grim", "grimac")
@@ -107,6 +118,7 @@ public class GrimAdmin implements BuildableCommand {
         Sender sender = context.sender();
         sender.sendMessage(Component.text("Grim admin command center:", NamedTextColor.GOLD));
         sender.sendMessage(Component.text("/grim admin playerstats <player>", NamedTextColor.GRAY));
+        sender.sendMessage(Component.text("/grim admin combatintel <player>", NamedTextColor.GRAY));
         sender.sendMessage(Component.text("/grim admin staffstats", NamedTextColor.GRAY));
         sender.sendMessage(Component.text("/grim admin refreshplayer <player>", NamedTextColor.GRAY));
         sender.sendMessage(Component.text("/grim admin setalerts <player> <on|off|toggle>", NamedTextColor.GRAY));
@@ -177,6 +189,73 @@ public class GrimAdmin implements BuildableCommand {
             if (alertManager.hasVerboseEnabled(online)) verboseOn++;
             if (alertManager.hasBrandsEnabled(online)) brandsOn++;
             if (GrimAPI.INSTANCE.getSpectateManager().isSpectating(online.getUniqueId())) spectating++;
+        }
+
+        private void handleCombatIntel(CommandContext<Sender> context) {
+            Sender sender = context.sender();
+            PlatformPlayer target = resolveTargetPlatformPlayer(sender, context.get("target"));
+            if (target == null) return;
+
+            GrimPlayer grimPlayer = GrimAPI.INSTANCE.getPlayerDataManager().getPlayer(target.getUniqueId());
+            if (grimPlayer == null) {
+                sender.sendMessage(Component.text("Player data is unavailable (offline/exempt).", NamedTextColor.RED));
+                return;
+            }
+
+            int combatChecks = 0;
+            int combatEnabled = 0;
+            int combatFlagged = 0;
+            double combatVl = 0.0D;
+            double reachVl = 0.0D;
+            double hitboxVl = 0.0D;
+            List<CheckVlEntry> topChecks = new ArrayList<>();
+
+            for (AbstractCheck abstractCheck : grimPlayer.getChecks()) {
+                if (!(abstractCheck instanceof Check check)) continue;
+
+                String className = check.getClass().getName().toLowerCase(Locale.ROOT);
+                boolean combatRelevant = className.contains(".checks.impl.combat.") || className.contains(".checks.impl.aim.");
+                if (!combatRelevant) continue;
+
+                combatChecks++;
+                if (check.isEnabled()) combatEnabled++;
+                if (check.violations > 0.0D) {
+                    combatFlagged++;
+                    combatVl += check.violations;
+                    topChecks.add(new CheckVlEntry(checkName(check), check.violations));
+                }
+
+                String configName = check.getConfigName();
+                if (configName == null) continue;
+                if (configName.equalsIgnoreCase("Reach")) reachVl += check.violations;
+                if (configName.equalsIgnoreCase("Hitboxes")) hitboxVl += check.violations;
+            }
+
+            topChecks.sort(Comparator.comparingDouble(CheckVlEntry::violations).reversed());
+            int top = Math.min(3, topChecks.size());
+
+            double riskScore = combatVl + combatFlagged * 1.5D + reachVl * 2.5D + hitboxVl * 2.0D;
+            String riskBand = riskBand(riskScore);
+
+            sender.sendMessage(Component.text("Advanced combat intelligence: " + target.getName(), NamedTextColor.GOLD));
+            sender.sendMessage(Component.text("- Combat checks active: " + combatEnabled + "/" + combatChecks, NamedTextColor.GRAY));
+            sender.sendMessage(Component.text("- Combat anomalies: " + combatFlagged + " checks, total combat VL " + Math.round(combatVl), NamedTextColor.GRAY));
+            sender.sendMessage(Component.text("- Core combat risk: Reach VL " + Math.round(reachVl) + ", Hitboxes VL " + Math.round(hitboxVl), NamedTextColor.GRAY));
+            sender.sendMessage(Component.text("- Aim profile: yaw " + format(grimPlayer.getHorizontalSensitivity()) + ", pitch " + format(grimPlayer.getVerticalSensitivity()), NamedTextColor.GRAY));
+            sender.sendMessage(Component.text("- Latency profile: keepalive " + grimPlayer.getKeepAlivePing() + "ms, transaction " + grimPlayer.getTransactionPing() + "ms", NamedTextColor.GRAY));
+            sender.sendMessage(Component.text("- Combat risk score: " + format(riskScore) + " (" + riskBand + ")", riskColor(riskBand)));
+
+            if (top == 0) {
+                sender.sendMessage(Component.text("- Top combat checks: no current combat violations.", NamedTextColor.GRAY));
+                return;
+            }
+
+            sender.sendMessage(Component.text("- Top combat checks:", NamedTextColor.GRAY));
+            for (int i = 0; i < top; i++) {
+                CheckVlEntry entry = topChecks.get(i);
+                sender.sendMessage(Component.text("  " + (i + 1) + ") " + entry.name() + " — VL " + format(entry.violations()),
+                        NamedTextColor.GRAY));
+            }
         }
 
         sender.sendMessage(Component.text("Staff admin stats", NamedTextColor.GOLD));
@@ -280,6 +359,7 @@ public class GrimAdmin implements BuildableCommand {
                 "grim.admin",
                 "grim.admin.supervisor",
                 "grim.admin.playerstats",
+                "grim.admin.combatintel",
                 "grim.admin.player.refresh",
                 "grim.admin.alerts.manage",
                 "grim.admin.verbose.manage",
@@ -314,6 +394,37 @@ public class GrimAdmin implements BuildableCommand {
 
     private static String nullToUnknown(@Nullable String value) {
         return value == null || value.isBlank() ? "unknown" : value;
+    }
+
+    private static String checkName(Check check) {
+        String displayName = check.getDisplayName();
+        if (displayName != null && !displayName.isBlank()) return displayName;
+        String configName = check.getConfigName();
+        if (configName != null && !configName.isBlank()) return configName;
+        return check.getClass().getSimpleName();
+    }
+
+    private static String format(double value) {
+        return String.format(Locale.ROOT, "%.2f", value);
+    }
+
+    private static String riskBand(double score) {
+        if (score >= 30.0D) return "critical";
+        if (score >= 15.0D) return "high";
+        if (score >= 7.5D) return "medium";
+        return "low";
+    }
+
+    private static NamedTextColor riskColor(String riskBand) {
+        return switch (riskBand) {
+            case "critical" -> NamedTextColor.DARK_RED;
+            case "high" -> NamedTextColor.RED;
+            case "medium" -> NamedTextColor.YELLOW;
+            default -> NamedTextColor.GREEN;
+        };
+    }
+
+    private record CheckVlEntry(String name, double violations) {
     }
 
     private enum ToggleAction {

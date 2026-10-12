@@ -64,6 +64,7 @@ public class FabricPermissionRegistrationManager implements PermissionRegistrati
         registerPermission("grim.admin", PermissionDefaultValue.OP);
         registerPermission("grim.admin.supervisor", PermissionDefaultValue.OP);
         registerPermission("grim.admin.playerstats", PermissionDefaultValue.OP);
+        registerPermission("grim.admin.combatintel", PermissionDefaultValue.OP);
         registerPermission("grim.admin.player.refresh", PermissionDefaultValue.OP);
         registerPermission("grim.admin.alerts.manage", PermissionDefaultValue.OP);
         registerPermission("grim.admin.verbose.manage", PermissionDefaultValue.OP);
