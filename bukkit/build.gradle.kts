@@ -238,6 +238,116 @@ bukkit {
             default = Permission.Default.FALSE
         }
 
+        register("grim.help") {
+            description = "Display Grim help information"
+            default = Permission.Default.OP
+        }
+
+        register("grim.reload") {
+            description = "Reload Grim configuration"
+            default = Permission.Default.OP
+        }
+
+        register("grim.version") {
+            description = "Check Grim version and update status"
+            default = Permission.Default.OP
+        }
+
+        register("grim.debug") {
+            description = "Toggle Grim debug mode"
+            default = Permission.Default.OP
+        }
+
+        register("grim.consoledebug") {
+            description = "Toggle console debug output"
+            default = Permission.Default.OP
+        }
+
+        register("grim.spectate") {
+            description = "Spectate flagged players"
+            default = Permission.Default.OP
+        }
+
+        register("grim.spectate.stophere") {
+            description = "Stop spectating without teleporting back"
+            default = Permission.Default.OP
+        }
+
+        register("grim.history") {
+            description = "View violation history"
+            default = Permission.Default.OP
+        }
+
+        register("grim.history.copy") {
+            description = "Copy violation history output"
+            default = Permission.Default.OP
+        }
+
+        register("grim.history.migrate") {
+            description = "Run history data migration"
+            default = Permission.Default.OP
+        }
+
+        register("grim.history.repair") {
+            description = "Repair history sessions"
+            default = Permission.Default.OP
+        }
+
+        register("grim.log") {
+            description = "Search and view stored logs"
+            default = Permission.Default.OP
+        }
+
+        register("grim.dump") {
+            description = "Generate a Grim diagnostics dump"
+            default = Permission.Default.OP
+        }
+
+        register("grim.testwebhook") {
+            description = "Test configured webhook output"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin") {
+            description = "Access Grim admin tools"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.supervisor") {
+            description = "Access supervisor-level Grim admin statistics"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.playerstats") {
+            description = "View detailed Grim runtime statistics for a player"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.combatintel") {
+            description = "View advanced combat intelligence for a player"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.player.refresh") {
+            description = "Refresh Grim runtime state for a player"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.alerts.manage") {
+            description = "Manage alert toggle state for other staff members"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.verbose.manage") {
+            description = "Manage verbose toggle state for other staff members"
+            default = Permission.Default.OP
+        }
+
+        register("grim.admin.brands.manage") {
+            description = "Manage brands toggle state for other staff members"
+            default = Permission.Default.OP
+        }
+
     }
 }
 
